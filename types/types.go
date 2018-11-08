@@ -39,3 +39,21 @@ type UserInfo struct {
 	Email  string            `json:"email"`
 	Assets map[string]*Asset `json:"asset"`
 }
+
+// TransactionInfo structure
+type TransactionInfo struct {
+	DealNo    string `json:"dealNo"`
+	Symbol    string `json:"symbol"`
+	MatchType string `json:"matchType"`
+	OrderNo   string `json:"orderNo"`
+	OrderType string `json:"orderType"`
+	Action    string `json:"action"`
+	Price     string `json:"price"`
+	Volume    string `json:"volume"`
+	UtcDeal   string `json:"utcDeal"`
+}
+
+// TransactionInfoList structure
+type TransactionInfoList struct {
+	TransactionInfoList []*TransactionInfo
+}

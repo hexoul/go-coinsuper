@@ -21,6 +21,7 @@ import (
 // Interface for APIs
 type Interface interface {
 	UserAssetInfo(options *types.Options) (*types.UserInfo, error)
+	TradeHistory(options *types.Options) (*types.TransactionInfoList, error)
 }
 
 // Client for Coinsuper API
@@ -82,12 +83,34 @@ func GetInstanceWithKey(accessKey, secretKey string) *Client {
 }
 
 func (s *Client) parseOptions(options *types.Options) *types.Request {
+	// Make params
 	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	params := "accesskey=" + s.accessKey + "&secretkey=" + s.secretKey + "&timestamp=" + timestamp
+	if options == nil {
+		options = &types.Options{}
+	}
+	if options.Symbol != "" {
+		params = params + "&symbol=" + options.Symbol
+	}
+	if options.UtcStart != "" {
+		params = params + "&utcStart=" + options.UtcStart
+	}
+	if options.UtcEnd != "" {
+		params = params + "&utcEnd=" + options.UtcEnd
+	}
+	if options.StartDealNo != "" {
+		params = params + "&startDealNo=" + options.StartDealNo
+	}
+	if options.Size != "" {
+		params = params + "&size=" + options.Size
+	}
+
+	// Sign
 	hasher := md5.New()
 	hasher.Write([]byte(params))
 	sign := hex.EncodeToString(hasher.Sum(nil))
 
+	// Make request
 	common := &types.RequestCommon{
 		AccessKey: s.accessKey,
 		Sign:      sign,
@@ -95,7 +118,7 @@ func (s *Client) parseOptions(options *types.Options) *types.Request {
 	}
 	return &types.Request{
 		Common: common,
-		Data:   &types.Options{},
+		Data:   options,
 	}
 }
 
@@ -123,6 +146,9 @@ func (s *Client) getResponse(url string, req *types.Request) (*types.Response, [
 }
 
 // UserAssetInfo obtains your own personal asset information
+//   arg: -
+//   src: https://api.coinsuper.com/api/v1/asset/userAssetInfo
+//   doc: https://github.com/coinsuperapi/API_docs_en/wiki#11-personal-asset-information
 func (s *Client) UserAssetInfo(options *types.Options) (*types.UserInfo, error) {
 	url := fmt.Sprintf("%s/asset/userAssetInfo", baseURL)
 
@@ -132,6 +158,29 @@ func (s *Client) UserAssetInfo(options *types.Options) (*types.UserInfo, error) 
 	}
 
 	var result = new(types.UserInfo)
+	b, err := json.Marshal(resp.Data.Result)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(b, result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// TradeHistory returns personal trade history
+//   arg: utcStart(mandatory), symbol, utcEnd, startDealNo, size
+//   src: https://api.coinsuper.com/api/v1/order/tradeHistory
+//   doc: https://github.com/coinsuperapi/API_docs_en/wiki#29-query-personal-trade-history
+func (s *Client) TradeHistory(options *types.Options) (*types.TransactionInfoList, error) {
+	url := fmt.Sprintf("%s/order/tradeHistory", baseURL)
+
+	resp, _, err := s.getResponse(url, s.parseOptions(options))
+	if err != nil {
+		return nil, err
+	}
+
+	var result = new(types.TransactionInfoList)
 	b, err := json.Marshal(resp.Data.Result)
 	if err != nil {
 		return nil, err

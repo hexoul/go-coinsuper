@@ -10,8 +10,8 @@
 - As program, start from `coinsuper.GetInstance()` after executing `go run -accesskey=[YOUR_ACCESS_KEY] -secret=[YOUR_SECRET_KEY]`
 
 ## Features
-| Type | Endpoint                               | Done |
-|------|----------------------------------------|------|
+| Type        | Endpoint                        | Done |
+|-------------|---------------------------------|------|
 | User        | /v1/asset/userAssetInfo         | ✔ |
 | Transaction | /v1/order/buy                   | - |
 | Transaction | /v1/order/sell                  | - |
@@ -21,7 +21,7 @@
 | Transaction | /v1/order/details               | - |
 | Transaction | /v1/order/openList              | - |
 | Transaction | /v1/order/history               | - |
-| Transaction | /v1/order/tradeHistory          | - |
+| Transaction | /v1/order/tradeHistory          | ✔ |
 | Quote       | /v1/market/depth                | - |
 | Quote       | /v1/market/orderBook            | - |
 | Quote       | /v1/market/kline                | - |
