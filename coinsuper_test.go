@@ -9,7 +9,9 @@ func init() {
 }
 
 func TestUserAssetInfo(t *testing.T) {
-	if _, err := GetInstance().UserAssetInfo(nil); err != nil {
+	if info, err := GetInstance().UserAssetInfo(nil); err != nil {
 		t.Fatal(err)
+	} else if info.Assets["BTC"] == nil {
+		t.FailNow()
 	}
 }

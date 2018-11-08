@@ -3,7 +3,7 @@ package types
 
 // ResponseData structure
 type ResponseData struct {
-	Timestamp string      `json:"timestamp"`
+	Timestamp int64       `json:"timestamp"`
 	Result    interface{} `json:"result"`
 }
 
@@ -21,8 +21,21 @@ type RequestCommon struct {
 	Sign      string `json:"sign"`
 }
 
-// RequestCommon structure
+// Request structure
 type Request struct {
 	Common *RequestCommon `json:"common"`
 	Data   *Options       `json:"data"`
+}
+
+// Asset structure
+type Asset struct {
+	Available string `json:"available"`
+	Total     string `json:"total"`
+}
+
+// UserInfo structure
+type UserInfo struct {
+	UserNo int64             `json:"userNo"`
+	Email  string            `json:"email"`
+	Assets map[string]*Asset `json:"asset"`
 }

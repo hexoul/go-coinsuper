@@ -12,7 +12,9 @@
 ## Features
 | Type | Endpoint                               | Done |
 |------|----------------------------------------|------|
-| Auth | /v1/asset/userAssetInfo                | - |
+| Auth | /v1/asset/userAssetInfo                | ✔ |
+| Auth | /v1/order/history                      | - |
+| Auth | /v1/order/tradeHistory                 | - |
 
 ## Reference
 [Coinsuper API docs](https://github.com/coinsuperapi/API_docs_en)

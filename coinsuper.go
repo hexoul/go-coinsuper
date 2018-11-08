@@ -9,8 +9,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/hexoul/go-coinsuper/types"
 	"github.com/hexoul/go-coinsuper/util"
@@ -18,6 +20,7 @@ import (
 
 // Interface for APIs
 type Interface interface {
+	UserAssetInfo(options *types.Options) (*types.UserInfo, error)
 }
 
 // Client for Coinsuper API
@@ -79,7 +82,8 @@ func GetInstanceWithKey(accessKey, secretKey string) *Client {
 }
 
 func (s *Client) parseOptions(options *types.Options) *types.Request {
-	params := "accesskey=" + s.accessKey + "&secretkey=" + s.secretKey
+	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
+	params := "accesskey=" + s.accessKey + "&secretkey=" + s.secretKey + "&timestamp=" + timestamp
 	hasher := md5.New()
 	hasher.Write([]byte(params))
 	sign := hex.EncodeToString(hasher.Sum(nil))
@@ -87,6 +91,7 @@ func (s *Client) parseOptions(options *types.Options) *types.Request {
 	common := &types.RequestCommon{
 		AccessKey: s.accessKey,
 		Sign:      sign,
+		Timestamp: timestamp,
 	}
 	return &types.Request{
 		Common: common,
@@ -99,7 +104,6 @@ func (s *Client) getResponse(url string, req *types.Request) (*types.Response, [
 	if err != nil {
 		return nil, nil, err
 	}
-	fmt.Printf("reqBody %s\n", string(reqBody))
 	httpReq, err := http.NewRequest("POST", url, bytes.NewBufferString(string(reqBody)))
 	if err != nil {
 		return nil, nil, err
@@ -108,18 +112,32 @@ func (s *Client) getResponse(url string, req *types.Request) (*types.Response, [
 	if err != nil {
 		return nil, nil, err
 	}
-	fmt.Print(string(body))
-	return nil, body, nil
+	resp := new(types.Response)
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return nil, nil, err
+	}
+	if resp.Code != "1000" {
+		return nil, nil, fmt.Errorf("[%s] %s", resp.Code, resp.Msg)
+	}
+	return resp, body, nil
 }
 
 // UserAssetInfo obtains your own personal asset information
-func (s *Client) UserAssetInfo(options *types.Options) (*types.Response, error) {
+func (s *Client) UserAssetInfo(options *types.Options) (*types.UserInfo, error) {
 	url := fmt.Sprintf("%s/asset/userAssetInfo", baseURL)
 
-	_, _, err := s.getResponse(url, s.parseOptions(options))
+	resp, _, err := s.getResponse(url, s.parseOptions(options))
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	var result = new(types.UserInfo)
+	b, err := json.Marshal(resp.Data.Result)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(b, result); err != nil {
+		return nil, err
+	}
+	return result, nil
 }
