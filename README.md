@@ -7,7 +7,7 @@
 
 ## Usage
 - As library, start from `coinsuper.GetInstanceWithKey('YOUR_ACCESS_KEY', 'YOUR_SECRET_KEY')`
-- As program, start from `coinsuper.GetInstance()` after executing `go run -accesskey=[YOUR_ACCESS_KEY] -secret=[YOUR_SECRET_KEY]`
+- As program, start from `coinsuper.GetInstance()` after executing `go run -coinsuperAccesskey=[YOUR_ACCESS_KEY] -coinsuperSecret=[YOUR_SECRET_KEY]`
 
 ## Features
 | Type        | Endpoint                        | Done |
