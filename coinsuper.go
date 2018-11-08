@@ -46,9 +46,9 @@ func init() {
 		arg := strings.Split(val, "=")
 		if len(arg) < 2 {
 			continue
-		} else if arg[0] == "-coinsuperAccesskey" {
+		} else if arg[0] == "-coinsuper:accesskey" {
 			accessKey = arg[1]
-		} else if arg[0] == "-coinsuperSecret" {
+		} else if arg[0] == "-coinsuper:secretkey" {
 			secretKey = arg[1]
 		}
 	}
