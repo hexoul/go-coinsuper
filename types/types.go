@@ -13,3 +13,16 @@ type Response struct {
 	Msg  string        `json:"msg"`
 	Data *ResponseData `json:"data"`
 }
+
+// RequestCommon structure
+type RequestCommon struct {
+	AccessKey string `json:"accesskey"`
+	Timestamp string `json:"timestamp,omitempty"`
+	Sign      string `json:"sign"`
+}
+
+// RequestCommon structure
+type Request struct {
+	Common *RequestCommon `json:"common"`
+	Data   *Options       `json:"data"`
+}
