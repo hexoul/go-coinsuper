@@ -85,34 +85,30 @@ func GetInstanceWithKey(accessKey, secretKey string) *Client {
 func (s *Client) parseOptions(options *types.Options) *types.Request {
 	// Make params
 	timestamp := strconv.FormatInt(time.Now().Unix()*1000, 10)
-	// Params should be sorted alphabetically with key (a-z)
-	params := "accesskey=" + s.accessKey + "&secretkey=" + s.secretKey
+	params := []string{}
 	if options == nil {
 		options = &types.Options{}
 	}
-	if options.Size != "" {
-		params = params + "&size=" + options.Size
+	options.AccessKey = s.accessKey
+	options.SecretKey = s.secretKey
+	options.Timestamp = timestamp
+	if bOption, err := json.Marshal(options); err == nil {
+		mOption := new(map[string]interface{})
+		if err := json.Unmarshal(bOption, &mOption); err == nil {
+			for _, k := range types.OptionOrder {
+				if (*mOption)[k] != nil {
+					params = append(params, fmt.Sprintf("%s=%v", k, (*mOption)[k]))
+				}
+			}
+		}
 	}
-	if options.StartDealNo != "" {
-		params = params + "&startDealNo=" + options.StartDealNo
-	}
-	if options.Symbol != "" {
-		params = params + "&symbol=" + options.Symbol
-	}
-	params = params + "&timestamp=" + timestamp
-	if options.UtcStart != "" {
-		params = params + "&utcStart=" + options.UtcStart
-	}
-	if options.UtcEnd != "" {
-		params = params + "&utcEnd=" + options.UtcEnd
-	}
-	if options.WithTrade != "" {
-		params = params + "&withTrade=" + options.WithTrade
-	}
+	options.AccessKey = ""
+	options.SecretKey = ""
+	options.Timestamp = ""
 
 	// Sign
 	hasher := md5.New()
-	hasher.Write([]byte(params))
+	hasher.Write([]byte(strings.Join(params, "&")))
 	sign := hex.EncodeToString(hasher.Sum(nil))
 
 	// Make request
