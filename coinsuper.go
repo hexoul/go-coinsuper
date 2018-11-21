@@ -84,25 +84,30 @@ func GetInstanceWithKey(accessKey, secretKey string) *Client {
 
 func (s *Client) parseOptions(options *types.Options) *types.Request {
 	// Make params
-	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-	params := "accesskey=" + s.accessKey + "&secretkey=" + s.secretKey + "&timestamp=" + timestamp
+	timestamp := strconv.FormatInt(time.Now().Unix()*1000, 10)
+	// Params should be sorted alphabetically with key (a-z)
+	params := "accesskey=" + s.accessKey + "&secretkey=" + s.secretKey
 	if options == nil {
 		options = &types.Options{}
+	}
+	if options.Size != "" {
+		params = params + "&size=" + options.Size
+	}
+	if options.StartDealNo != "" {
+		params = params + "&startDealNo=" + options.StartDealNo
 	}
 	if options.Symbol != "" {
 		params = params + "&symbol=" + options.Symbol
 	}
+	params = params + "&timestamp=" + timestamp
 	if options.UtcStart != "" {
 		params = params + "&utcStart=" + options.UtcStart
 	}
 	if options.UtcEnd != "" {
 		params = params + "&utcEnd=" + options.UtcEnd
 	}
-	if options.StartDealNo != "" {
-		params = params + "&startDealNo=" + options.StartDealNo
-	}
-	if options.Size != "" {
-		params = params + "&size=" + options.Size
+	if options.WithTrade != "" {
+		params = params + "&withTrade=" + options.WithTrade
 	}
 
 	// Sign

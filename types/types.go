@@ -17,8 +17,8 @@ type Response struct {
 // RequestCommon structure
 type RequestCommon struct {
 	AccessKey string `json:"accesskey"`
-	Timestamp string `json:"timestamp,omitempty"`
 	Sign      string `json:"sign"`
+	Timestamp string `json:"timestamp"`
 }
 
 // Request structure
